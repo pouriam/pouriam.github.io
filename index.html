@@ -3,57 +3,105 @@
 <title>CS-416 Data Visualization</title>
 </head>
 
-<script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: lightblue; stroke: black;} </style>
+<script src="http://d3js.org/d3.v6.js"></script>
+
 <body onload='init()'>
-<svg width=300 height=300>
-</svg>
+
+<div id="scene1"></div>
+
 <script>
 
 async function init() {
 
-data = await d3.csv("cars2017.csv");
+data = await d3.csv("https://covidtracking.com/data/download/all-states-history.csv");
 
-let AverageCityMPG = data.map(a => a.AverageCityMPG);
-let AverageHighwayMPG = data.map(a => a.AverageHighwayMPG);
+states = d3.groups(data, d => d.state);
 
-const x1s = d3.scaleLog([10, 150], [0, 200]).base(10);
-const y1s = d3.scaleLog([10, 150], [200, 0]).base(10);
+states_death = d3.rollup(data, d => d3.sum(d, s => parseInt(s.death)), d => d.state);
+states_hospitalized = d3.rollup(data, d => d3.sum(d, s => parseInt(s.hospitalizedCurrently)), d => d.state);
 
-d3.select("svg").append("g")
- .attr("transform","translate(50,50)")
- .selectAll().data(data).enter().append("circle")
- .attr("cx", function(d,i) {return x1s(d["AverageCityMPG"]);})
- .attr("cy", function(d,i) {return y1s(d["AverageHighwayMPG"]);})
- .attr("r", function(d,i) {return parseInt(d["EngineCylinders"]) + 2;});
+const data_combined = new Map();
+states_hospitalized.forEach((obj, k) => data_combined.set(k,  {"death": states_death.get(k), "hospitalized":obj }  ));
 
+states_death_arr = d3.rollups(data, d => d3.sum(d, s => parseInt(s.death)), d => d.state);
+states_hospitalized_arr = d3.rollups(data, d => d3.sum(d, s => parseInt(s.hospitalizedCurrently)), d => d.state);
 
-dt = [10,20,50,100];
+let minValueDeath = states_death_arr.reduce((prev, curr) => prev[1] < curr[1] ? prev : curr);
+let maxValueDeath = states_death_arr.reduce((prev, curr) => prev[1] > curr[1] ? prev : curr);
 
-var x = d3.scaleBand().domain(dt).range([10,150]);
-var y = d3.scaleBand().domain(dt).range([10,150]);
+let minValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] < curr[1] ? prev : curr);
+let maxValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] > curr[1] ? prev : curr);
 
 
-var x_axis = d3.axisBottom(x1s).tickValues(dt).tickFormat(d3.format("~s"));
-var y_axis = d3.axisLeft(y1s).tickValues(dt).tickFormat(d3.format("~s"));;
+// X Axis
+x = d3.scaleLinear().domain([minValueDeath[1], maxValueDeath[1]]).range([0, 600]);
+// x = d3.scaleLog().domain([minValueDeath[1], maxValueDeath[1]]).range([0, 600]).base(2);
 
+d3.select("#scene1").append("svg").attr("width", 700).attr("height", 700)
+    .append("g")
+    .attr("transform", "translate(100,650)")
+    .call(d3.axisBottom(x));
 
-d3.select("svg").append("g")
- .attr("transform","translate(50,50)")
- .call(y_axis)
- .attr("text-anchor", "end")
- .select("path").attr("d","M-6,200.5H0.5V0.5H-6")
- .select("g").selectAll().data(dt);
+// Y axis
+var y = d3.scaleLinear().domain([minValueHospitalized[1], maxValueHospitalized[1]]).range([600, 0]);
+// var y = d3.scaleLog().domain([minValueHospitalized[1], maxValueHospitalized[1]]).range([600, 0]).base(2);
 
+d3.select("#scene1").select("svg").append("g")
+    .attr("transform", "translate(100,50)")
+    .call(d3.axisLeft(y));
 
-d3.select("svg").append("g")
- .attr("transform","translate(50,250)")
- .call(x_axis)
- .attr("text-anchor", "middle")
- .select("path").attr("d","M0.5,6V0.5H200.5V6")
- .select("g").selectAll().data(dt);
+let sequentialScale = d3.scaleSequential()
+  .domain([0, 56])
+  .interpolator(d3.interpolateRainbow);
+
+var tooltip = d3.select("#scene1")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("position", "fixed")
+
+const mouseover = function(event, d) {
+    tooltip.style("opacity", 1)
+}
+
+const mousemove = function(event, d) {
+    tooltip
+      .html("<strong>State:</strong> " + d[0] + 
+            "<br><strong>Death</strong>: " + d3.format(",.2r")(d[1].death) + 
+            "<br><strong>Hospitalized</strong>: " + d3.format(",.2r")(d[1].hospitalized))
+      .style("left", d3.select(this).attr("cx") + "px") 
+      .style("top", d3.select(this).attr("cy")  + "px")
+}
+
+const mouseleave = function(event, d) {
+    tooltip
+      .transition()
+      .duration(200)
+      .style("opacity", 0)
+}
+
+d3.select("#scene1").select("svg").append('g')
+    .attr("transform", "translate(100,100)")
+    .selectAll()
+    .data(data_combined)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d, i) { return x(d[1].death); } )
+      .attr("cy", function (d, i) { return y(d[1].hospitalized)-50; } )
+      .attr("r", 4)
+      .style("fill", function(d,i) {return sequentialScale(i);})
+      .on("mouseover", mouseover )
+    .on("mousemove", mousemove )
+    .on("mouseleave", mouseleave )
+
 
 }
+ 
 </script>
 
 </body>
