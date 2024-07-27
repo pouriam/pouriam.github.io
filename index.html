@@ -56,7 +56,7 @@ html, body {
 
 async function init() {
 
-data = await d3.csv("https://covidtracking.com/data/download/all-states-history.csv");
+data = await d3.csv("https://raw.githubusercontent.com/pouriam/pouriam.github.io/main/all-states-history.csv");
 
 states = d3.groups(data, d => d.state);
 

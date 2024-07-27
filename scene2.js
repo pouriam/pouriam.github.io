@@ -5,7 +5,7 @@ function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValue
     var path = d3.geoPath();
 
     Promise.all([
-        d3.csv('https://www2.census.gov/geo/docs/reference/state.txt')
+        d3.csv('https://raw.githubusercontent.com/pouriam/pouriam.github.io/main/state_code.txt')
     ]).then(function([stateCodes]) {
         console.log(stateCodes);
     });
