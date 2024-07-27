@@ -1,13 +1,56 @@
-<html>
+<!DOCTYPE html>
 <head>
 <title>CS-416 Data Visualization</title>
+
+<link rel="stylesheet" href="styles.css" />
+<style>
+
+body {
+    color: #323f4a;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+html, body {
+    height: 100%;
+}
+</style>
+
 </head>
 
 <script src="https://d3js.org/d3.v6.js"></script>
+<script src="https://d3js.org/topojson.v3.js"></script>
 
-<body onload='init()'>
+<body onload="init()">
 
-<div id="scene1"></div>
+<table id="tbl" width="100%">
+    <tr>
+        <td style="text-align:center;">
+            <nav class="breadcrumbs">
+                <a id="bc1" href="#" class="breadcrumbs__item is-active">Scatterplot</a>
+                <a id="bc2" href="#" class="breadcrumbs__item">Map1</a> 
+                <a id="bc3" href="#" class="breadcrumbs__item">Map2</a>
+            </nav>            
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;">
+            <div id="scene1"></div>
+            <div id="scene2" style="display:none;"></div>
+            <div id="scene3" style="display:none;"></div>
+        </td>
+    </tr>
+    
+</table>
+
+</body>
+
+<script type="text/javascript" src="scene1.js" ></script>
+<script type="text/javascript" src="scene2.js" ></script>
+<script type="text/javascript" src="scene3.js" ></script>
 
 <script>
 
@@ -32,77 +75,13 @@ let maxValueDeath = states_death_arr.reduce((prev, curr) => prev[1] > curr[1] ? 
 let minValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] < curr[1] ? prev : curr);
 let maxValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] > curr[1] ? prev : curr);
 
-
-// X Axis
-x = d3.scaleLinear().domain([minValueDeath[1], maxValueDeath[1]]).range([0, 600]);
-// x = d3.scaleLog().domain([minValueDeath[1], maxValueDeath[1]]).range([0, 600]).base(2);
-
-d3.select("#scene1").append("svg").attr("width", 700).attr("height", 700)
-    .append("g")
-    .attr("transform", "translate(100,650)")
-    .call(d3.axisBottom(x));
-
-// Y axis
-var y = d3.scaleLinear().domain([minValueHospitalized[1], maxValueHospitalized[1]]).range([600, 0]);
-// var y = d3.scaleLog().domain([minValueHospitalized[1], maxValueHospitalized[1]]).range([600, 0]).base(2);
-
-d3.select("#scene1").select("svg").append("g")
-    .attr("transform", "translate(100,50)")
-    .call(d3.axisLeft(y));
-
-let sequentialScale = d3.scaleSequential()
-  .domain([0, 56])
-  .interpolator(d3.interpolateRainbow);
-
-var tooltip = d3.select("#scene1")
-    .append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "1px")
-    .style("border-radius", "5px")
-    .style("padding", "10px")
-    .style("position", "fixed")
-
-const mouseover = function(event, d) {
-    tooltip.style("opacity", 1)
-}
-
-const mousemove = function(event, d) {
-    tooltip
-      .html("<strong>State:</strong> " + d[0] + 
-            "<br><strong>Death</strong>: " + d3.format(",.2r")(d[1].death) + 
-            "<br><strong>Hospitalized</strong>: " + d3.format(",.2r")(d[1].hospitalized))
-      .style("left", d3.select(this).attr("cx") + "px") 
-      .style("top", d3.select(this).attr("cy")  + "px")
-}
-
-const mouseleave = function(event, d) {
-    tooltip
-      .transition()
-      .duration(200)
-      .style("opacity", 0)
-}
-
-d3.select("#scene1").select("svg").append('g')
-    .attr("transform", "translate(100,100)")
-    .selectAll()
-    .data(data_combined)
-    .enter()
-    .append("circle")
-      .attr("cx", function (d, i) { return x(d[1].death); } )
-      .attr("cy", function (d, i) { return y(d[1].hospitalized)-50; } )
-      .attr("r", 4)
-      .style("fill", function(d,i) {return sequentialScale(i);})
-      .on("mouseover", mouseover )
-    .on("mousemove", mousemove )
-    .on("mouseleave", mouseleave )
-
+callScene1(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
+callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
+callScene3(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
 
 }
  
 </script>
 
-</body>
+<script type="text/javascript" src="swipe.js" ></script>
 </html>

@@ -1,0 +1,34 @@
+.cart__toggle-label {
+  transform: rotate(90deg);
+  white-space: nowrap;
+}
+
+
+.cart__pag {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  transition: margin .24s ease-out;
+  width: calc(100% - 64px);
+}
+
+.cart__pag-item {
+  border: 1px solid black;
+  box-sizing: border-box;
+  border-radius: 100%;
+  height: 8px;
+  margin: 0 2px;
+  width: 8px;
+}
+
+.cart__pag-item:first-child {
+  background: black;
+}
+
+@keyframes example {
+  0%        {right: -375px;}
+  40%       {right: 96px;}
+  100%      {right: 0;}
+}
