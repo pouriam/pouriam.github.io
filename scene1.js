@@ -38,9 +38,9 @@ const mouseover = function(event, d) {
 
 const mousemove = function(event, d) {
     tooltip
-      .html("<strong>State:</strong> " + d[0] + 
-            "<br><strong>Death</strong>: " + d3.format(",.2r")(d[1].death) + 
-            "<br><strong>Hospitalized</strong>: " + d3.format(",.2r")(d[1].hospitalized))
+      .html("<strong>State:</strong> " + data_combined.get(d[0]).state + 
+            "<br><strong>Death</strong>: " + d3.format(",")(d[1].death) + 
+            "<br><strong>Hospitalized</strong>: " + d3.format(",")(d[1].hospitalized))
       .style("left", (parseInt(d3.select(this).attr("cx")) + (window.innerWidth / 3)) + "px") 
       .style("top", (parseInt(d3.select(this).attr("cy"))+70) + "px")
 }
@@ -52,13 +52,18 @@ const mouseleave = function(event, d) {
       .style("opacity", 0)
 }
 
+var highDX = 0;
+var highDY = 0;
+var highHX = 0;
+var highHY = 0;
+
 d3.select("#scene1").select("svg").append('g')
     .attr("transform", "translate(100,100)")
     .selectAll()
     .data(data_combined)
     .enter()
     .append("circle")
-      .attr("cx", function (d, i) { return x(d[1].death); } )
+      .attr("cx", function (d, i) { if(d[1].id == "36") {highDX = x(d[1].death); highDY = y(d[1].hospitalized)-50;} if(d[1].id == "06") {highHX = x(d[1].death); highHY = y(d[1].hospitalized)-50;} return x(d[1].death); } )
       .attr("cy", function (d, i) { return y(d[1].hospitalized)-50; } )
       .attr("r", 4)
       .style("fill", function(d,i) {return sequentialScale(i);})
@@ -66,4 +71,43 @@ d3.select("#scene1").select("svg").append('g')
     .on("mousemove", mousemove )
     .on("mouseleave", mouseleave )
 
+const annotations1 = [
+    {
+      note: {
+        title: "Highest Death Rate in the country"
+      },
+      connector: { lineType : "horizontal" },
+      x: highDX,
+      y: highDY,
+      dy: 30,
+      dx: -20
+    }
+]
+
+const makeAnnotations1 = d3.annotation().annotations(annotations1);
+
+d3.select("#scene1").select("svg")
+    .append("g")
+    .call(makeAnnotations1)
+    .attr("transform", "translate(100,100)");
+
+const annotations2 = [
+    {
+      note: {
+        title: "Highest Hospitalization Rate in the country"
+      },
+      x: highHX,
+      y: highHY,
+      dy: 20,
+      dx: 20
+    }
+]
+  
+  const makeAnnotations2 = d3.annotation().annotations(annotations2);
+  
+  d3.select("#scene1").select("svg")
+      .append("g")
+      .call(makeAnnotations2)
+      .attr("transform", "translate(100,100)");
+  
 }

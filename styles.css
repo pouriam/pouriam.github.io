@@ -55,7 +55,7 @@
   }
   
   .states :hover {
-    fill: red;
+    filter: brightness(50%);
   }
   
   .state-borders {

@@ -23,6 +23,7 @@ html, body {
 
 <script src="https://d3js.org/d3.v6.js"></script>
 <script src="https://d3js.org/topojson.v3.js"></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 
 <body onload="init()">
 
@@ -31,8 +32,8 @@ html, body {
         <td style="text-align:center;">
             <nav class="breadcrumbs">
                 <a id="bc1" href="#" class="breadcrumbs__item is-active">Scatterplot</a>
-                <a id="bc2" href="#" class="breadcrumbs__item">Map1</a> 
-                <a id="bc3" href="#" class="breadcrumbs__item">Map2</a>
+                <a id="bc2" href="#" class="breadcrumbs__item">Death Rate</a> 
+                <a id="bc3" href="#" class="breadcrumbs__item">hospitalized Rate</a>
             </nav>            
         </td>
     </tr>
@@ -56,6 +57,18 @@ html, body {
 
 async function init() {
 
+let statesAbrv = new Map();
+let statesIds = new Map();
+
+Promise.all([
+    d3.csv('https://raw.githubusercontent.com/pouriam/pouriam.github.io/main/state_code.txt')
+]).then(function([stateCodes]) {
+    stateCodes.forEach(element => {
+        statesIds.set(element['STUSAB'], element['STATE']);
+        statesAbrv.set(element['STUSAB'], element['STATE_NAME']);
+    });
+});
+
 data = await d3.csv("https://raw.githubusercontent.com/pouriam/pouriam.github.io/main/all-states-history.csv");
 
 states = d3.groups(data, d => d.state);
@@ -64,7 +77,8 @@ states_death = d3.rollup(data, d => d3.sum(d, s => parseInt(s.death)), d => d.st
 states_hospitalized = d3.rollup(data, d => d3.sum(d, s => parseInt(s.hospitalizedCurrently)), d => d.state);
 
 const data_combined = new Map();
-states_hospitalized.forEach((obj, k) => data_combined.set(k,  {"death": states_death.get(k), "hospitalized":obj }  ));
+states_hospitalized.forEach((obj, k) => data_combined.set(k,  
+    {"death": states_death.get(k), "hospitalized":obj, "id": statesIds.get(k), "state": statesAbrv.get(k) } ));
 
 states_death_arr = d3.rollups(data, d => d3.sum(d, s => parseInt(s.death)), d => d.state);
 states_hospitalized_arr = d3.rollups(data, d => d3.sum(d, s => parseInt(s.hospitalizedCurrently)), d => d.state);
@@ -74,6 +88,8 @@ let maxValueDeath = states_death_arr.reduce((prev, curr) => prev[1] > curr[1] ? 
 
 let minValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] < curr[1] ? prev : curr);
 let maxValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] > curr[1] ? prev : curr);
+
+console.log(data_combined);
 
 callScene1(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
 callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
