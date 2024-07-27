@@ -14,9 +14,6 @@ body {
 
 }
 
-html, body {
-    height: 100%;
-}
 </style>
 
 </head>
@@ -34,6 +31,7 @@ html, body {
                 <a id="bc1" href="#" class="breadcrumbs__item is-active">Scatterplot</a>
                 <a id="bc2" href="#" class="breadcrumbs__item">Death Rate</a> 
                 <a id="bc3" href="#" class="breadcrumbs__item">hospitalized Rate</a>
+                <a id="bc4" href="#" class="breadcrumbs__item">State Detailed</a>
             </nav>            
         </td>
     </tr>
@@ -42,6 +40,7 @@ html, body {
             <div id="scene1"></div>
             <div id="scene2" style="display:none;"></div>
             <div id="scene3" style="display:none;"></div>
+            <div id="scene4" style="display:none;"></div>
         </td>
     </tr>
     
@@ -49,9 +48,11 @@ html, body {
 
 </body>
 
+<script type="text/javascript" src="table.js" ></script>
 <script type="text/javascript" src="scene1.js" ></script>
 <script type="text/javascript" src="scene2.js" ></script>
 <script type="text/javascript" src="scene3.js" ></script>
+<script type="text/javascript" src="scene4.js" ></script>
 
 <script>
 
@@ -89,11 +90,11 @@ let maxValueDeath = states_death_arr.reduce((prev, curr) => prev[1] > curr[1] ? 
 let minValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] < curr[1] ? prev : curr);
 let maxValueHospitalized = states_hospitalized_arr.reduce((prev, curr) => prev[1] > curr[1] ? prev : curr);
 
-console.log(data_combined);
-
 callScene1(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
-callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
-callScene3(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined);
+callScene2(minValueDeath, maxValueDeath, data_combined);
+callScene3(minValueHospitalized, maxValueHospitalized, data_combined);
+initializeScene4(data);
+callScene4();
 
 }
  

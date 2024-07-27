@@ -1,5 +1,6 @@
-function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValueHospitalized, data_combined) {
+function callScene2(minValueDeath, maxValueDeath, data_combined) {
 
+    var currentState = "";
     d3.select("#scene2").append("svg").attr("width", 960).attr("height", 600);
 
     var path = d3.geoPath();
@@ -27,10 +28,13 @@ function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValue
         .style("position", "fixed")
 
     const mouseover = function(event, d) {
+        d3.select(this).style("cursor", "pointer");
+        currentState = statesCodeMap.get(d["id"]);
         let dt = data_combined.get(statesCodeMap.get(d["id"]));
         tooltip
-          .html("<strong>State: " + dt.state + "</strong><br><hr>" + 
-                "Deaths: " + d3.format(",")(dt.death))
+          .html("<p style='text-align:left;'><strong>State: " + dt.state + "</strong><hr></p>" + 
+                "<p style='text-align:left;'>Deaths: " + d3.format(",")(dt.death) + 
+                "</p><p> Click to see more details.</p>")
           .style("left", event.pageX + "px") 
           .style("top", (event.pageY-50) + "px")
           
@@ -48,8 +52,8 @@ function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValue
     }
 
     const colorAssigment = function (d) {
-        const startColor = { r: 255, g: 204, b: 204 }; // Light red (#FFCCCC)
-        const endColor = { r: 153, g: 0, b: 0 }; // Dark red (#990000)
+        const startColor = { r: 255, g: 204, b: 204 }; // Light red
+        const endColor = { r: 153, g: 0, b: 0 }; // Dark red
         let deathRate = data_combined.get(statesCodeMap.get(d["id"]));
         
         const normalizedValue = (deathRate.death - minValueDeath[1]) / maxValueDeath[1];
@@ -62,6 +66,14 @@ function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValue
         const hex = (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
         
         return `#${hex}`;
+    }
+
+    const clickRedirect = function() {
+        setState(currentState);
+        callScene4();
+        var el = document.getElementById('bc4');
+        el.onclick();
+        return true;
     }
 
     Promise.all([
@@ -78,7 +90,8 @@ function callScene2(minValueDeath, maxValueDeath, minValueHospitalized, maxValue
             .attr("fill", function(d) { return colorAssigment(d);})
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
-            .on("mouseleave", mouseleave);
+            .on("mouseleave", mouseleave)
+            .on("click", function(d) { return clickRedirect(); });
 
         d3.select("#scene2").select("svg").append("path")
             .attr("class", "state-borders")

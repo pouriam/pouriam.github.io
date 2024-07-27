@@ -38,11 +38,11 @@ const mouseover = function(event, d) {
 
 const mousemove = function(event, d) {
     tooltip
-      .html("<strong>State:</strong> " + data_combined.get(d[0]).state + 
-            "<br><strong>Death</strong>: " + d3.format(",")(d[1].death) + 
-            "<br><strong>Hospitalized</strong>: " + d3.format(",")(d[1].hospitalized))
-      .style("left", (parseInt(d3.select(this).attr("cx")) + (window.innerWidth / 3)) + "px") 
-      .style("top", (parseInt(d3.select(this).attr("cy"))+70) + "px")
+      .html("<p style='text-align:left;'><strong>State: " + data_combined.get(d[0]).state + 
+            "</strong><hr></p><p style='text-align:left;'>Death: " + d3.format(",")(d[1].death) + 
+            "<br>Hospitalized: " + d3.format(",")(d[1].hospitalized) + "</p>")
+      .style("left", event.pageX + "px") 
+      .style("top", event.pageY + "px")
 }
 
 const mouseleave = function(event, d) {
@@ -74,7 +74,8 @@ d3.select("#scene1").select("svg").append('g')
 const annotations1 = [
     {
       note: {
-        title: "Highest Death Rate in the country"
+        title: "New York",
+        label: "Highest Death Rate in the country."
       },
       connector: { lineType : "horizontal" },
       x: highDX,
@@ -94,7 +95,8 @@ d3.select("#scene1").select("svg")
 const annotations2 = [
     {
       note: {
-        title: "Highest Hospitalization Rate in the country"
+        title: "California",
+        label: "Highest Hospitalization Rate in the country"
       },
       x: highHX,
       y: highHY,
