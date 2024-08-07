@@ -10,7 +10,8 @@ function updateCAAnnotations(svg, lblVal, lblTitle) {
         {
         note: {
             title: lblTitle,
-            label: d3.format(",")(lblVal)
+            label: d3.format(",")(lblVal),
+            padding: 10
         },
         disable: ["connector"],
         color: ["#000080"],
@@ -37,7 +38,8 @@ function updateBCAnnotations(svg, titleVal) {
     const annotations1 = [
         {
         note: {
-            title: d3.format(",")(titleVal)
+            title: d3.format(",")(titleVal),
+            padding: 10
         },
         connector: { lineType : "horizontal" },
         x: 220,
@@ -62,7 +64,8 @@ function updateABAnnotations(svg, titleVal) {
     const annotations1 = [
         {
         note: {
-            title: d3.format(",")(titleVal)
+            title: d3.format(",")(titleVal),
+            padding: 10
         },
         connector: { lineType : "horizontal" },
         x: 275,
@@ -78,7 +81,6 @@ function updateABAnnotations(svg, titleVal) {
 
     svg.append("g")
         .call(makeAnnotations1)
-        .attr("class", "abCount")
         .attr("style", "font-size: 25;")
         .attr("transform", "translate(100,100)");
 }
@@ -87,7 +89,8 @@ function updateSKAnnotations(svg, titleVal) {
     const annotations1 = [
         {
         note: {
-            title: d3.format(",")(titleVal)
+            title: d3.format(",")(titleVal),
+            padding: 10
         },
         connector: { lineType : "horizontal" },
         x: 325,
@@ -112,7 +115,8 @@ function updateONAnnotations(svg, titleVal) {
     const annotations1 = [
         {
         note: {
-            title: d3.format(",")(titleVal)
+            title: d3.format(",")(titleVal),
+            padding: 10
         },
         connector: { lineType : "horizontal" },
         x: 500,
@@ -137,12 +141,13 @@ function updateQCAnnotations(svg, titleVal) {
     const annotations1 = [
         {
         note: {
-            title: d3.format(",")(titleVal)
+            title: d3.format(",")(titleVal),
+            padding: 10
         },
         connector: { lineType : "horizontal" },
         x: 170,
         y: -130,
-        dy: 100,
+        dy: 135,
         dx: -20
         }
     ]
