@@ -28,7 +28,7 @@ function updateCAAnnotations(svg, lblVal, lblTitle) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "caCount")
-        .attr("style", "font-size: 22;")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(500,100)");
 }
 
@@ -54,6 +54,7 @@ function updateBCAnnotations(svg, titleVal) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "bcCount")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(100,100)");
 }
 
@@ -78,6 +79,7 @@ function updateABAnnotations(svg, titleVal) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "abCount")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(100,100)");
 }
 
@@ -102,6 +104,7 @@ function updateSKAnnotations(svg, titleVal) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "skCount")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(100,100)");
 }
 
@@ -126,6 +129,7 @@ function updateONAnnotations(svg, titleVal) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "onCount")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(100,100)");
 }
 
@@ -150,5 +154,6 @@ function updateQCAnnotations(svg, titleVal) {
     svg.append("g")
         .call(makeAnnotations1)
         .attr("class", "qcCount")
+        .attr("style", "font-size: 25;")
         .attr("transform", "translate(500,500)");
 }
